@@ -37,7 +37,44 @@ parseDirectory(){
 }
 
 parseTar(){
-    echo "$3"
+
+    tempString="_temp"
+
+    mkdir $3$tempString
+
+    tar xf $3 -C $3$tempString
+
+    cd $3$tempString
+
+    if [ "$2" == "true" ]
+    then
+        echo "Number of files in tar archive: $3 is $(ls | wc -l)"
+    fi
+
+    if [ "$1" == "true" ]
+    then
+        grep -rnw -e "Such Open, much Stack"
+    fi
+
+    for f in *
+    do
+        if [ -d "$f" ]
+        then
+            parseDirectory "$1" "$2" "$f"
+        else
+            checkIfTar "$f"
+
+            if [ "$tarOrNot" == "true" ]
+            then
+                parseTar "$1" "$2" "$f"
+            fi
+        fi
+
+    done
+
+    cd ".."
+
+    rm -r $3$tempString
 }
 
 checkCommand(){
@@ -52,7 +89,7 @@ checkCommand(){
     for arg in "$@"
     do
         let "index += 1"
-        echo "$index"
+
         if [ "$arg" == "-n" ]
         then
             nFlag="true"
